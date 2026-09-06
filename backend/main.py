@@ -236,21 +236,25 @@ def submit_quote(payload: QuoteRequest):
         ("Message", payload.message),
     ]
 
-    send_both_emails(
-        lambda: send_email(
-            OWNER_EMAIL,
-            f"New Quote Request - {payload.company}",
-            owner_email_html("New Quote Request", rows),
-            from_email=SMTP_USER,
-        ),
-        lambda: send_email(
-            payload.email,
-            "We've received your quote request",
-            customer_email_html(payload.first_name, rows),
-            inline_logo=True,
-            attach_pdf=True,
-        ),
-    )
+    try:
+        send_both_emails(
+            lambda: send_email(
+                OWNER_EMAIL,
+                f"New Quote Request - {payload.company}",
+                owner_email_html("New Quote Request", rows),
+                from_email=SMTP_USER,
+            ),
+            lambda: send_email(
+                payload.email,
+                "We've received your quote request",
+                customer_email_html(payload.first_name, rows),
+                inline_logo=True,
+                attach_pdf=True,
+            ),
+        )
+    except Exception as exc:
+        logger.exception("Failed to send quote request emails")
+        raise HTTPException(status_code=502, detail="Failed to send enquiry email.") from exc
     log_to_sheet("Quote Request", {
         "name": f"{payload.first_name} {payload.last_name}",
         "company": payload.company,
@@ -278,21 +282,25 @@ def submit_sample(payload: SampleRequest):
         ("Purpose / Note", payload.purpose),
     ]
 
-    send_both_emails(
-        lambda: send_email(
-            OWNER_EMAIL,
-            f"New Sample Request - {payload.company}",
-            owner_email_html("New Sample Request", rows),
-            from_email=SMTP_USER,
-        ),
-        lambda: send_email(
-            payload.email,
-            "We've received your sample request",
-            customer_email_html(payload.name, rows),
-            inline_logo=True,
-            attach_pdf=True,
-        ),
-    )
+    try:
+        send_both_emails(
+            lambda: send_email(
+                OWNER_EMAIL,
+                f"New Sample Request - {payload.company}",
+                owner_email_html("New Sample Request", rows),
+                from_email=SMTP_USER,
+            ),
+            lambda: send_email(
+                payload.email,
+                "We've received your sample request",
+                customer_email_html(payload.name, rows),
+                inline_logo=True,
+                attach_pdf=True,
+            ),
+        )
+    except Exception as exc:
+        logger.exception("Failed to send sample request emails")
+        raise HTTPException(status_code=502, detail="Failed to send enquiry email.") from exc
     log_to_sheet("Sample Request", {
         "name": payload.name,
         "company": payload.company,
