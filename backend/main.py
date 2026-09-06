@@ -185,7 +185,7 @@ def send_email(
             )
             msg.attach(part)
 
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+    with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=15) as server:
         server.starttls()
         server.login(SMTP_USER, SMTP_PASSWORD)
         server.sendmail(from_email, [to_email], msg.as_string())
