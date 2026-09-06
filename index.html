@@ -532,6 +532,12 @@ label { font-size: 12.5px; font-weight: 600; color: var(--slate); }
 input, select, textarea { width: 100%; min-width: 0; box-sizing: border-box; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: var(--charcoal); background: var(--cream); transition: border-color 0.2s; outline: none; }
 input:focus, select:focus, textarea:focus { border-color: var(--forest); background: white; }
 textarea { resize: vertical; min-height: 90px; }
+.combo { position: relative; }
+.combo-list { display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; max-height: 220px; overflow-y: auto; background: white; border: 1.5px solid var(--border); border-radius: 8px; box-shadow: 0 10px 28px rgba(0,0,0,0.12); z-index: 20; }
+.combo-list.open { display: block; }
+.combo-option { padding: 9px 14px; font-size: 13.5px; color: var(--charcoal); cursor: pointer; }
+.combo-option:hover, .combo-option.active { background: var(--forest-light); }
+.combo-empty { padding: 10px 14px; font-size: 13px; color: var(--muted); }
 .form-check { display: flex; align-items: flex-start; gap: 10px; font-size: 12.5px; color: var(--muted); cursor: pointer; line-height: 1.5; }
 .form-check input { width: auto; flex-shrink: 0; margin-top: 2px; }
 .submit-btn { width: 100%; margin-top: 20px; padding: 15px; background: var(--forest); color: white; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background 0.2s; }
@@ -1664,7 +1670,7 @@ footer { background: var(--charcoal); padding: 60px 0 0; }
             </div>
           </div>
           <div class="contact-row">
-            <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
+            <div class="contact-icon"><i class="fas fa-phone"></i></div>
             <div>
               <h5>Phone / WhatsApp</h5>
               <a href="tel:+916305174646">+91 63051 74646</a>
@@ -1731,14 +1737,14 @@ footer { background: var(--charcoal); padding: 60px 0 0; }
             </div>
             <div class="form-group">
               <label>Country <span class="req">*</span></label>
-              <input type="text" id="q-country" list="q-country-list" placeholder="Type to search your country" required autocomplete="off">
-              <datalist id="q-country-list">
-                <option>United States</option><option>United Kingdom</option>
-                <option>Australia</option><option>Canada</option>
-                <option>Germany</option><option>Singapore</option>
-                <option>UAE</option><option>Saudi Arabia</option>
-                <option>Malaysia</option><option>Other</option>
-              </datalist>
+              <div class="combo" data-combo="q-country">
+                <input type="text" id="q-country" class="combo-input" placeholder="Type to search your country" required autocomplete="off">
+                <div class="combo-list" id="q-country-list" role="listbox"></div>
+              </div>
+            </div>
+            <div class="form-group" id="q-country-other-wrap" hidden>
+              <label>Please type your country <span class="req">*</span></label>
+              <input type="text" id="q-country-other" placeholder="Your country name">
             </div>
             <div class="form-group">
               <label>Buyer Type</label>
@@ -1753,27 +1759,10 @@ footer { background: var(--charcoal); padding: 60px 0 0; }
             </div>
             <div class="form-group full">
               <label>Product(s) of Interest <span class="req">*</span></label>
-              <input type="text" id="q-product" list="q-product-list" placeholder="Type to search a product" required autocomplete="off">
-              <datalist id="q-product-list">
-                <option>Cow Dung Manure / Cakes / Powder</option>
-                <option>Vermicompost</option>
-                <option>Cow Dung Agarbatti</option>
-                <option>Dhoop Sticks</option>
-                <option>Havan Cups</option>
-                <option>Cow Dung Logs</option>
-                <option>Large Dung Cakes</option>
-                <option>Cow Dung Briquettes</option>
-                <option>Biomass Fuel Blocks</option>
-                <option>Multiple Products / Full Catalogue</option>
-                <option>Custom Sourcing — Fresh Fruits &amp; Vegetables</option>
-                <option>Custom Sourcing — Spices</option>
-                <option>Custom Sourcing — Organic &amp; Processed Foods</option>
-                <option>Custom Sourcing — Ayurvedic &amp; Herbal</option>
-                <option>Custom Sourcing — Rice &amp; Cereals</option>
-                <option>Custom Sourcing — Handicrafts &amp; Home Décor</option>
-                <option>Custom Sourcing — Textiles &amp; Home Furnishings</option>
-                <option>Other / Not Listed — Ask Us</option>
-              </datalist>
+              <div class="combo" data-combo="q-product">
+                <input type="text" id="q-product" class="combo-input" placeholder="Type to search a product" required autocomplete="off">
+                <div class="combo-list" id="q-product-list" role="listbox"></div>
+              </div>
             </div>
             <div class="form-group">
               <label>Quantity Required</label>
@@ -1836,16 +1825,10 @@ footer { background: var(--charcoal); padding: 60px 0 0; }
             </div>
             <div class="form-group full">
               <label>Product for Sample <span class="req">*</span></label>
-              <input type="text" id="s-product" list="s-product-list" placeholder="Type to search a product" required autocomplete="off">
-              <datalist id="s-product-list">
-                <option>Cow Dung Cakes / Powder (500g–1kg sample)</option>
-                <option>Vermicompost (2 kg sample)</option>
-                <option>Cow Dung Agarbatti (1 box)</option>
-                <option>Dhoop Sticks (1 box)</option>
-                <option>Havan Cups (pack of 10)</option>
-                <option>Cow Dung Briquettes (2 kg sample)</option>
-                <option>Other Sourced Product — Ask Us</option>
-              </datalist>
+              <div class="combo" data-combo="s-product">
+                <input type="text" id="s-product" class="combo-input" placeholder="Type to search a product" required autocomplete="off">
+                <div class="combo-list" id="s-product-list" role="listbox"></div>
+              </div>
             </div>
             <div class="form-group full">
               <label>Full Delivery Address <span class="req">*</span></label>
@@ -2163,10 +2146,107 @@ function clearStatus(el) {
   el.innerHTML = '';
 }
 
+/* ─── SEARCHABLE COMBOBOX (Country / Product fields) ─── */
+const COUNTRY_OPTIONS = [
+  "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia",
+  "Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium",
+  "Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria",
+  "Burkina Faso","Burundi","Cabo Verde","Cambodia","Cameroon","Canada","Central African Republic","Chad",
+  "Chile","China","Colombia","Comoros","Congo (Brazzaville)","Congo (DRC)","Costa Rica","Croatia","Cuba",
+  "Cyprus","Czechia","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador",
+  "Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia","Fiji","Finland","France","Gabon","Gambia",
+  "Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea","Guinea-Bissau","Guyana","Haiti",
+  "Honduras","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy","Ivory Coast",
+  "Jamaica","Japan","Jordan","Kazakhstan","Kenya","Kiribati","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia",
+  "Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Madagascar","Malawi",
+  "Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia",
+  "Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique","Myanmar","Namibia","Nauru","Nepal",
+  "Netherlands","New Zealand","Nicaragua","Niger","Nigeria","North Korea","North Macedonia","Norway","Oman",
+  "Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland",
+  "Portugal","Qatar","Romania","Russia","Rwanda","Saint Kitts and Nevis","Saint Lucia",
+  "Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal",
+  "Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia",
+  "South Africa","South Korea","South Sudan","Spain","Sri Lanka","Sudan","Suriname","Sweden","Switzerland",
+  "Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago",
+  "Tunisia","Turkey","Turkmenistan","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom",
+  "United States","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Yemen","Zambia",
+  "Zimbabwe","Other (not listed)"
+];
+
+const QUOTE_PRODUCT_OPTIONS = [
+  "Cow Dung Manure / Cakes / Powder","Vermicompost","Cow Dung Agarbatti","Dhoop Sticks","Havan Cups",
+  "Cow Dung Logs","Large Dung Cakes","Cow Dung Briquettes","Biomass Fuel Blocks",
+  "Multiple Products / Full Catalogue","Custom Sourcing — Fresh Fruits & Vegetables",
+  "Custom Sourcing — Spices","Custom Sourcing — Organic & Processed Foods",
+  "Custom Sourcing — Ayurvedic & Herbal","Custom Sourcing — Rice & Cereals",
+  "Custom Sourcing — Handicrafts & Home Décor","Custom Sourcing — Textiles & Home Furnishings",
+  "Other / Not Listed — Ask Us"
+];
+
+const SAMPLE_PRODUCT_OPTIONS = [
+  "Cow Dung Cakes / Powder (500g–1kg sample)","Vermicompost (2 kg sample)","Cow Dung Agarbatti (1 box)",
+  "Dhoop Sticks (1 box)","Havan Cups (pack of 10)","Cow Dung Briquettes (2 kg sample)",
+  "Other Sourced Product — Ask Us"
+];
+
+function initCombo(inputId, listId, options, onSelect) {
+  const input = document.getElementById(inputId);
+  const list = document.getElementById(listId);
+  if (!input || !list) return;
+
+  function render(filter) {
+    const q = filter.trim().toLowerCase();
+    const matches = q ? options.filter(o => o.toLowerCase().includes(q)) : options;
+    list.innerHTML = '';
+    if (!matches.length) {
+      list.innerHTML = '<div class="combo-empty">No matches — you can still type your own.</div>';
+    } else {
+      matches.slice(0, 50).forEach(opt => {
+        const row = document.createElement('div');
+        row.className = 'combo-option';
+        row.setAttribute('role', 'option');
+        row.textContent = opt;
+        row.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          input.value = opt;
+          list.classList.remove('open');
+          if (onSelect) onSelect(opt);
+        });
+        list.appendChild(row);
+      });
+    }
+    list.classList.add('open');
+  }
+
+  input.addEventListener('focus', () => render(input.value));
+  input.addEventListener('input', () => { render(input.value); if (onSelect) onSelect(input.value); });
+  input.addEventListener('blur', () => setTimeout(() => list.classList.remove('open'), 120));
+}
+
+initCombo('q-country', 'q-country-list', COUNTRY_OPTIONS, (value) => {
+  const otherWrap = document.getElementById('q-country-other-wrap');
+  const otherInput = document.getElementById('q-country-other');
+  const isOther = value === 'Other (not listed)';
+  otherWrap.hidden = !isOther;
+  otherInput.required = isOther;
+  if (!isOther) otherInput.value = '';
+});
+function getQuoteCountryValue() {
+  const otherWrap = document.getElementById('q-country-other-wrap');
+  if (otherWrap && !otherWrap.hidden) {
+    return document.getElementById('q-country-other').value.trim();
+  }
+  return document.getElementById('q-country').value.trim();
+}
+
+initCombo('q-product', 'q-product-list', QUOTE_PRODUCT_OPTIONS);
+initCombo('s-product', 's-product-list', SAMPLE_PRODUCT_OPTIONS);
+
 function validateForm(fields) {
   let firstInvalid = null;
   fields.forEach(f => {
     const group = f.closest('.form-group');
+    if (group && group.hidden) return; // skip fields that aren't currently shown (e.g. "Other country")
     const value = (f.type === 'checkbox') ? f.checked : f.value.trim();
     const invalid = f.type === 'checkbox' ? !value : !value;
     if (group) group.classList.toggle('invalid', invalid);
@@ -2365,7 +2445,7 @@ document.getElementById('quoteForm').addEventListener('submit', function (e) {
     formId: 'quoteForm',
     submitId: 'q-submit',
     statusId: 'q-status',
-    requiredIds: ['q-first', 'q-last', 'q-company', 'q-email', 'q-phone', 'q-country', 'q-product', 'q-consent'],
+    requiredIds: ['q-first', 'q-last', 'q-company', 'q-email', 'q-phone', 'q-country', 'q-country-other', 'q-product', 'q-consent'],
     title: 'Quote Request',
     fileNamePrefix: 'Quote-Request',
     buildRows: () => [
@@ -2373,7 +2453,7 @@ document.getElementById('quoteForm').addEventListener('submit', function (e) {
       ['Company', document.getElementById('q-company').value.trim()],
       ['Email', document.getElementById('q-email').value.trim()],
       ['Phone / WhatsApp', document.getElementById('q-phone').value.trim()],
-      ['Country', document.getElementById('q-country').value],
+      ['Country', getQuoteCountryValue()],
       ['Buyer Type', document.getElementById('q-buyertype').value],
       ['Product(s) of Interest', document.getElementById('q-product').value],
       ['Quantity Required', document.getElementById('q-quantity').value.trim()],
@@ -2387,7 +2467,7 @@ document.getElementById('quoteForm').addEventListener('submit', function (e) {
       company: document.getElementById('q-company').value.trim(),
       email: document.getElementById('q-email').value.trim(),
       phone: document.getElementById('q-phone').value.trim(),
-      country: document.getElementById('q-country').value,
+      country: getQuoteCountryValue(),
       buyer_type: document.getElementById('q-buyertype').value,
       product: document.getElementById('q-product').value,
       quantity: document.getElementById('q-quantity').value.trim(),
