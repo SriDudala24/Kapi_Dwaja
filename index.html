@@ -524,12 +524,12 @@ nav a.active::after { content: ''; position: absolute; left: 13px; right: 13px; 
 .enquiry-form-wrap { background: white; border-radius: 14px; padding: 32px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); }
 .form-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--charcoal); margin-bottom: 4px; }
 .form-sub { font-size: 13.5px; color: var(--muted); margin-bottom: 24px; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; min-width: 0; }
+.form-group { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .form-group.full { grid-column: 1 / -1; }
 label { font-size: 12.5px; font-weight: 600; color: var(--slate); }
 .req { color: var(--saffron); }
-input, select, textarea { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: var(--charcoal); background: var(--cream); transition: border-color 0.2s; outline: none; }
+input, select, textarea { width: 100%; min-width: 0; box-sizing: border-box; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: var(--charcoal); background: var(--cream); transition: border-color 0.2s; outline: none; }
 input:focus, select:focus, textarea:focus { border-color: var(--forest); background: white; }
 textarea { resize: vertical; min-height: 90px; }
 .form-check { display: flex; align-items: flex-start; gap: 10px; font-size: 12.5px; color: var(--muted); cursor: pointer; line-height: 1.5; }
@@ -725,7 +725,7 @@ footer { background: var(--charcoal); padding: 60px 0 0; }
   </div>
 
   <div class="mobile-nav-quick">
-    <a href="tel:+916305174646"><i class="fas fa-phone-alt"></i><span>Call</span></a>
+    <a href="tel:+916305174646"><i class="fas fa-phone"></i><span>Call</span></a>
     <a href="https://wa.me/916305174646" class="q-wa"><i class="fab fa-whatsapp"></i><span>WhatsApp</span></a>
     <a href="mailto:export@kapidwaja.com"><i class="fas fa-envelope"></i><span>Email</span></a>
   </div>
@@ -1731,14 +1731,14 @@ footer { background: var(--charcoal); padding: 60px 0 0; }
             </div>
             <div class="form-group">
               <label>Country <span class="req">*</span></label>
-              <select id="q-country" required>
-                <option value="">Select your country</option>
+              <input type="text" id="q-country" list="q-country-list" placeholder="Type to search your country" required autocomplete="off">
+              <datalist id="q-country-list">
                 <option>United States</option><option>United Kingdom</option>
                 <option>Australia</option><option>Canada</option>
                 <option>Germany</option><option>Singapore</option>
                 <option>UAE</option><option>Saudi Arabia</option>
                 <option>Malaysia</option><option>Other</option>
-              </select>
+              </datalist>
             </div>
             <div class="form-group">
               <label>Buyer Type</label>
@@ -1753,8 +1753,8 @@ footer { background: var(--charcoal); padding: 60px 0 0; }
             </div>
             <div class="form-group full">
               <label>Product(s) of Interest <span class="req">*</span></label>
-              <select id="q-product" required>
-                <option value="">Select product</option>
+              <input type="text" id="q-product" list="q-product-list" placeholder="Type to search a product" required autocomplete="off">
+              <datalist id="q-product-list">
                 <option>Cow Dung Manure / Cakes / Powder</option>
                 <option>Vermicompost</option>
                 <option>Cow Dung Agarbatti</option>
@@ -1773,7 +1773,7 @@ footer { background: var(--charcoal); padding: 60px 0 0; }
                 <option>Custom Sourcing — Handicrafts &amp; Home Décor</option>
                 <option>Custom Sourcing — Textiles &amp; Home Furnishings</option>
                 <option>Other / Not Listed — Ask Us</option>
-              </select>
+              </datalist>
             </div>
             <div class="form-group">
               <label>Quantity Required</label>
@@ -1836,8 +1836,8 @@ footer { background: var(--charcoal); padding: 60px 0 0; }
             </div>
             <div class="form-group full">
               <label>Product for Sample <span class="req">*</span></label>
-              <select id="s-product" required>
-                <option value="">Select product</option>
+              <input type="text" id="s-product" list="s-product-list" placeholder="Type to search a product" required autocomplete="off">
+              <datalist id="s-product-list">
                 <option>Cow Dung Cakes / Powder (500g–1kg sample)</option>
                 <option>Vermicompost (2 kg sample)</option>
                 <option>Cow Dung Agarbatti (1 box)</option>
@@ -1845,7 +1845,7 @@ footer { background: var(--charcoal); padding: 60px 0 0; }
                 <option>Havan Cups (pack of 10)</option>
                 <option>Cow Dung Briquettes (2 kg sample)</option>
                 <option>Other Sourced Product — Ask Us</option>
-              </select>
+              </datalist>
             </div>
             <div class="form-group full">
               <label>Full Delivery Address <span class="req">*</span></label>
