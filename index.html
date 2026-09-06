@@ -2202,7 +2202,7 @@ function initCombo(inputId, listId, options, onSelect) {
     if (!matches.length) {
       list.innerHTML = '<div class="combo-empty">No matches — you can still type your own.</div>';
     } else {
-      matches.slice(0, 50).forEach(opt => {
+      matches.slice(0, 300).forEach(opt => {
         const row = document.createElement('div');
         row.className = 'combo-option';
         row.setAttribute('role', 'option');
