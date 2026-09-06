@@ -1,12 +1,8 @@
+import base64
 import logging
 import os
-import smtplib
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from email.mime.application import MIMEApplication
-from email.mime.image import MIMEImage
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from typing import Optional
 
 import requests
@@ -19,11 +15,9 @@ load_dotenv()
 
 logger = logging.getLogger("enquiry_mailer")
 
-SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
-SMTP_USER = os.getenv("SMTP_USER")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
-OWNER_EMAIL = os.getenv("OWNER_EMAIL", SMTP_USER)
+RESEND_API_KEY = os.getenv("RESEND_API_KEY")
+RESEND_FROM_EMAIL = os.getenv("RESEND_FROM_EMAIL", "onboarding@resend.dev")
+OWNER_EMAIL = os.getenv("OWNER_EMAIL")
 FROM_NAME = os.getenv("FROM_NAME", "Kapi Dwaja Exports")
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 SHEETS_WEBHOOK_URL = os.getenv("SHEETS_WEBHOOK_URL", "")
@@ -149,46 +143,52 @@ def customer_email_html(name: str, rows: list[tuple[str, str]]) -> str:
     """
 
 
+def _file_to_base64(path: str) -> str:
+    with open(path, "rb") as f:
+        return base64.b64encode(f.read()).decode("ascii")
+
+
 def send_email(
     to_email: str,
     subject: str,
     html_body: str,
     inline_logo: bool = False,
     attach_pdf: bool = False,
-    from_email: str = OWNER_EMAIL,
 ) -> None:
-    if not SMTP_USER or not SMTP_PASSWORD:
+    if not RESEND_API_KEY:
         raise HTTPException(status_code=500, detail="Mail server is not configured.")
 
-    msg = MIMEMultipart("related")
-    msg["Subject"] = subject
-    msg["From"] = f"{FROM_NAME} <{from_email}>"
-    msg["Reply-To"] = OWNER_EMAIL
-    msg["To"] = to_email
-
-    alt = MIMEMultipart("alternative")
-    alt.attach(MIMEText(html_body, "html"))
-    msg.attach(alt)
-
+    attachments = []
     if inline_logo and os.path.exists(LOGO_PATH):
-        with open(LOGO_PATH, "rb") as f:
-            logo = MIMEImage(f.read())
-            logo.add_header("Content-ID", f"<{LOGO_CID}>")
-            logo.add_header("Content-Disposition", "inline", filename="logo.png")
-            msg.attach(logo)
-
+        attachments.append({
+            "filename": "logo.png",
+            "content": _file_to_base64(LOGO_PATH),
+            "content_id": LOGO_CID,
+        })
     if attach_pdf and os.path.exists(CATALOGUE_PATH):
-        with open(CATALOGUE_PATH, "rb") as f:
-            part = MIMEApplication(f.read(), _subtype="pdf")
-            part.add_header(
-                "Content-Disposition", "attachment", filename="Kapi-Dwaja-Exports-Catalogue-2026.pdf"
-            )
-            msg.attach(part)
+        attachments.append({
+            "filename": "Kapi-Dwaja-Exports-Catalogue-2026.pdf",
+            "content": _file_to_base64(CATALOGUE_PATH),
+        })
 
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=15) as server:
-        server.starttls()
-        server.login(SMTP_USER, SMTP_PASSWORD)
-        server.sendmail(from_email, [to_email], msg.as_string())
+    payload = {
+        "from": f"{FROM_NAME} <{RESEND_FROM_EMAIL}>",
+        "to": [to_email],
+        "reply_to": OWNER_EMAIL,
+        "subject": subject,
+        "html": html_body,
+    }
+    if attachments:
+        payload["attachments"] = attachments
+
+    resp = requests.post(
+        "https://api.resend.com/emails",
+        headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+        json=payload,
+        timeout=15,
+    )
+    if resp.status_code >= 400:
+        raise RuntimeError(f"Resend API error {resp.status_code}: {resp.text}")
 
 
 _mail_executor = ThreadPoolExecutor(max_workers=4)
@@ -242,7 +242,6 @@ def submit_quote(payload: QuoteRequest):
                 OWNER_EMAIL,
                 f"New Quote Request - {payload.company}",
                 owner_email_html("New Quote Request", rows),
-                from_email=SMTP_USER,
             ),
             lambda: send_email(
                 payload.email,
@@ -288,7 +287,6 @@ def submit_sample(payload: SampleRequest):
                 OWNER_EMAIL,
                 f"New Sample Request - {payload.company}",
                 owner_email_html("New Sample Request", rows),
-                from_email=SMTP_USER,
             ),
             lambda: send_email(
                 payload.email,
